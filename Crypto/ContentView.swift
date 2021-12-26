@@ -9,8 +9,21 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        Text("Hello, world!")
-            .padding()
+        ZStack {
+            Color.theme.background
+                .ignoresSafeArea()
+            
+            VStack {
+                Text("Accent Color")
+                    .foregroundColor(Color.theme.accent)
+                Text("Secondary Text Color")
+
+                Text("Accent Color")
+
+                Text("Accent Color")
+
+            }
+        }
     }
 }
 
