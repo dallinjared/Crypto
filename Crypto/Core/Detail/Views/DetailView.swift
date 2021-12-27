@@ -22,6 +22,7 @@ struct DetailLoadingView: View {
 struct DetailView: View {
     
     @StateObject var vm: DetailViewModel
+    @State private var showFullDescription: Bool = false
     private let columns: [GridItem] = [
         GridItem(.flexible()),
         GridItem(.flexible())
@@ -33,21 +34,29 @@ struct DetailView: View {
         print("Loaded")
     }
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                Text("Hi")
-                    .frame(height: 150)
-                
-                overviewTitle
-                Divider()
-                overviewGrid
-                additionalTitle
-                Divider()
-                additionalGrid
+        ScrollView(showsIndicators: false) {
+            VStack {
+                ChartView(coin: vm.coin)
+                    .padding(.vertical)
+                VStack(spacing: 20) {
+                    overviewTitle
+                    Divider()
+                    overviewDescription
+                    overviewGrid
+                    additionalTitle
+                    Divider()
+                    additionalGrid
+                    websiteLinks
+                }
+                .padding()
             }
-            .padding()
         }
         .navigationTitle(vm.coin.name)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                navigationBarTrailingItems
+            }
+        }
     }
 }
 
@@ -98,5 +107,71 @@ extension DetailView {
                     StatisticView(stat: stat)
                 }
             }
+    }
+    
+    private var navigationBarTrailingItems: some View {
+        HStack {
+            Text(vm.coin.symbol.uppercased())
+                .font(.headline)
+                .foregroundColor(Color.theme.secondaryText)
+            CoinImageView(coin: vm.coin)
+                .frame(width: 25, height: 25)
+        }
+    }
+    
+    private var overviewDescription: some View {
+        ZStack {
+            if let coinDescription = vm.coinDescription, !coinDescription.isEmpty {
+                VStack(alignment: .leading) {
+                    Text(coinDescription)
+                        .lineLimit(showFullDescription ? nil : 3)
+                        .font(.callout)
+                        .foregroundColor(Color.theme.secondaryText)
+                    Button {
+                        withAnimation(.easeInOut) {
+                            showFullDescription.toggle()
+                        }
+                    } label: {
+                        HStack {
+                            Text(showFullDescription ? "Collapse" : "Expand")
+                                .fontWeight(.bold)
+                            Image(systemName: "chevron.down")
+                                .rotationEffect(Angle(degrees: showFullDescription ? 180 : 0))
+                        }
+                        .font(.caption)
+                        .padding(.vertical, 4)
+                        .foregroundColor(Color.theme.accent)
+                    }
+
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+    }
+    
+    private var websiteLinks: some View {
+        VStack(alignment:.leading, spacing: 10) {
+            if let websiteString = vm.websiteURL,
+               let url = URL(string: websiteString) {
+                HStack {
+                    Image(systemName: "link")
+                        .font(.caption)
+                        .foregroundColor(.blue)
+                    Link("Website", destination: url)  
+                }
+            }
+            
+            if let redditString = vm.redditURL,
+               let url = URL(string: redditString) {
+                HStack {
+                    Image(systemName: "link")
+                        .font(.caption)
+                        .foregroundColor(.blue)
+                    Link("Reddit", destination: url)
+                }
+            }
+        }
+        .accentColor(.blue)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
