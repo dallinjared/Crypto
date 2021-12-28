@@ -31,7 +31,6 @@ struct DetailView: View {
     
     init(coin: Coin) {
         _vm = StateObject(wrappedValue: DetailViewModel(coin: coin))
-        print("Loaded")
     }
     var body: some View {
         ScrollView(showsIndicators: false) {

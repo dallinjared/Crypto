@@ -12,10 +12,9 @@ struct HomeView: View {
     @EnvironmentObject private var vm : HomeViewModel
     @State private var showPortfolio: Bool = false // Animate right
     @State private var showPortfolioView: Bool = false // New Sheet
-   
     @State private var selectedCoin: Coin? = nil
     @State private var showDetailView: Bool = false
-
+    @State private var showSettingsView: Bool = false
     
     var body: some View {
         ZStack {
@@ -28,7 +27,6 @@ struct HomeView: View {
                     PortfolioView(isPresented: $showPortfolioView)
                         .environmentObject(vm)
                 }
-
             
             // Content Layer
             VStack {
@@ -46,6 +44,12 @@ struct HomeView: View {
                 }
                 
                 Spacer(minLength: 0)
+            }
+            .sheet(isPresented: $showSettingsView) {
+                showSettingsView = false
+            } content: {
+                SettingsView(isPresented: $showSettingsView)
+                    .environmentObject(vm)
             }
         }
         .background(
@@ -75,6 +79,8 @@ extension HomeView {
                 .onTapGesture {
                     if showPortfolio {
                         showPortfolioView.toggle()
+                    } else {
+                        showSettingsView.toggle()
                     }
                 }
                 .background(
